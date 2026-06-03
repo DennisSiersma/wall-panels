@@ -30,8 +30,12 @@ external_components:
   # waveshare_io_ch32v003: nog NIET in ESPHome core (PR #10071 staat nog open).
   # GEPIND op de head-commit van die PR (latonita/esphome@799f673) zodat builds
   # reproduceerbaar zijn en niet stuk gaan als de PR-branch verandert.
-  # -> Update deze SHA bewust als je nieuwere PR-commits wilt, of vervang dit
-  #    blok door de core-component zodra de PR gemerged is.
+  # LET OP: pinnen beschermt tegen PR-branch-wijzigingen, NIET tegen drift in de
+  #   ESPHome-core. Als een nieuwere ESPHome-versie deze gepinde commit laat
+  #   falen bij het compileren -> hoog de SHA bewust op naar de nieuwste PR-commit.
+  # LET OP 2: bij merge wordt de component mogelijk hernoemd (discussie loopt:
+  #   waveshare_io_expander / _extension) -> de 'waveshare_io_ch32v003:'-keys
+  #   hieronder moeten dan mee veranderen. Geen 1-op-1 swap naar core.
   - source: github://latonita/esphome@799f67369e7847706ec633e288a45a89c4c24bce
     components: [waveshare_io_ch32v003]
     refresh: 0s
@@ -46,15 +50,16 @@ esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
   flash_size: 16MB
+  cpu_frequency: 240MHz
   framework:
     type: esp-idf
-    sdkconfig_options:
-      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
-      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
-      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
-      CONFIG_SPIRAM_RODATA: "y"
-      # Voorkomt dat het scherm flikkert/uitvalt tijdens een OTA-update.
-      CONFIG_SPIRAM_XIP_FROM_PSRAM: "y"
+    # execute_from_psram = de ESPHome-nette manier om code/rodata uit PSRAM te
+    # draaien (voorheen handmatig via CONFIG_SPIRAM_XIP_FROM_PSRAM / _FETCH_
+    # INSTRUCTIONS / _RODATA). Houdt het scherm stabiel tijdens een OTA-update
+    # en voorkomt botsende sdkconfig-knoppen. Per clydebarrow (mipi_rgb-auteur).
+    advanced:
+      execute_from_psram: true
+    # Nodig voor remote_webview (websocket + jpeg-decoder).
     components:
       - name: espressif/esp_websocket_client
         ref: 1.5.0
@@ -178,6 +183,8 @@ light:
     output: wave_io_pwm_output
     restore_mode: ALWAYS_ON
     default_transition_length: 1s
+    # Vloeiender dimmen (per clydebarrow).
+    gamma_correct: 1.8
 
 # ==================================================
 # Display
@@ -191,6 +198,14 @@ display:
       waveshare_io_ch32v003: wave_io_hub
       number: 3
     pixel_mode: 18bit
+    # --------------------------------------------------------------------
+    # LET OP: deze init_sequence is VERMOEDELIJK OVERBODIG. De core-driver
+    # mipi_rgb kent het model WAVESHARE-4-480x480 en levert de init zelf;
+    # clydebarrow (de driver-auteur) geeft alleen model + rotation op, geen
+    # init_sequence. Aanrader: probeer een build/flash met dit hele blok
+    # uitgecommentarieerd. Werkt het scherm normaal -> definitief verwijderen.
+    # Zo niet -> dit blok weer activeren.
+    # --------------------------------------------------------------------
     init_sequence:
       - [0x11, 0x00]
       - [0xFF, 0x77, 0x01, 0x00, 0x00, 0x10]
