@@ -1,7 +1,7 @@
 # =====================================================================
 # Waveshare ESP32-S3 Touch-LCD-4 wandpaneel - GEDEELDE BASIS (package)
-# Geincludeerd door waveshare-panel-1.yaml / -2.yaml, die alleen de
-# substitutions invullen (device_name, friendly_name, room_name,
+# Geincludeerd door waveshare-panel-1.yaml / -2.yaml (en evt. meer), die
+# alleen de substitutions invullen (device_name, friendly_name, room_name,
 # rwv_server, dashboard_url).
 #
 # Vereist in secrets.yaml: wifi_ssid, wifi_password, api_key,
@@ -28,15 +28,14 @@ esphome:
                 id(pcf85063_time).write_time();
 
 external_components:
-  # Let op: dit zijn nog-niet-gemergede ESPHome PR-branches (refresh 1h pakt
-  # steeds de laatste stand). Voor maximale stabiliteit kun je pinnen op een
-  # vaste commit i.p.v. de PR-branch.
+  # waveshare_io_ch32v003: nog NIET in ESPHome core (PR #10071 staat nog open),
+  # dus blijft voorlopig nodig als externe component. Overweeg te pinnen op een
+  # vaste commit, of verwijder zodra de PR gemerged is.
   - source: github://pr#10071
     components: [waveshare_io_ch32v003]
     refresh: 1h
-  - source: github://pr#14358
-    components: [gt911]
-    refresh: 1h
+  # gt911 met expander-interrupt zit sinds ESPHome 2026.3 in de core (PR #14358
+  # is gemerged) -> een externe gt911-bron is NIET meer nodig.
   - source: github://strange-v/RemoteWebViewClient@main
     components: [remote_webview]
     refresh: 0s
@@ -231,7 +230,9 @@ touchscreen:
     i2c_id: bus_a
     display: lcd_display
     update_interval: 30ms
-    interrupt_pin:
+    # 'expander_interrupt_pin' zit sinds ESPHome 2026.3 in de core gt911 (PR #14358).
+    # Heette voorheen (in de externe PR) gewoon 'interrupt_pin'.
+    expander_interrupt_pin:
       waveshare_io_ch32v003: wave_io_hub
       number: 2
     reset_pin:
