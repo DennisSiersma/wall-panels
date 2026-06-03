@@ -1,8 +1,7 @@
 # =====================================================================
 # Waveshare ESP32-S3 Touch-LCD-4 wandpaneel - GEDEELDE BASIS (package)
-# Geincludeerd door waveshare-panel-1.yaml / -2.yaml (en evt. meer), die
-# alleen de substitutions invullen (device_name, friendly_name, room_name,
-# rwv_server, dashboard_url).
+# Geincludeerd door waveshare-panel-1..4.yaml, die alleen de substitutions
+# invullen (device_name, friendly_name, room_name, rwv_server, dashboard_url).
 #
 # Vereist in secrets.yaml: wifi_ssid, wifi_password, api_key,
 # ota_password, ap_password.
@@ -28,12 +27,14 @@ esphome:
                 id(pcf85063_time).write_time();
 
 external_components:
-  # waveshare_io_ch32v003: nog NIET in ESPHome core (PR #10071 staat nog open),
-  # dus blijft voorlopig nodig als externe component. Overweeg te pinnen op een
-  # vaste commit, of verwijder zodra de PR gemerged is.
-  - source: github://pr#10071
+  # waveshare_io_ch32v003: nog NIET in ESPHome core (PR #10071 staat nog open).
+  # GEPIND op de head-commit van die PR (latonita/esphome@799f673) zodat builds
+  # reproduceerbaar zijn en niet stuk gaan als de PR-branch verandert.
+  # -> Update deze SHA bewust als je nieuwere PR-commits wilt, of vervang dit
+  #    blok door de core-component zodra de PR gemerged is.
+  - source: github://latonita/esphome@799f67369e7847706ec633e288a45a89c4c24bce
     components: [waveshare_io_ch32v003]
-    refresh: 1h
+    refresh: 0s
   # gt911 met expander-interrupt zit sinds ESPHome 2026.3 in de core (PR #14358
   # gemerged) -> externe gt911-bron is NIET meer nodig. De core-gt911 accepteert
   # de expander-pin gewoon onder 'interrupt_pin' (zie touchscreen hieronder).
