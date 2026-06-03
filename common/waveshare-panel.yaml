@@ -35,7 +35,8 @@ external_components:
     components: [waveshare_io_ch32v003]
     refresh: 1h
   # gt911 met expander-interrupt zit sinds ESPHome 2026.3 in de core (PR #14358
-  # is gemerged) -> een externe gt911-bron is NIET meer nodig.
+  # gemerged) -> externe gt911-bron is NIET meer nodig. De core-gt911 accepteert
+  # de expander-pin gewoon onder 'interrupt_pin' (zie touchscreen hieronder).
   - source: github://strange-v/RemoteWebViewClient@main
     components: [remote_webview]
     refresh: 0s
@@ -51,6 +52,8 @@ esp32:
       CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
       CONFIG_SPIRAM_FETCH_INSTRUCTIONS: "y"
       CONFIG_SPIRAM_RODATA: "y"
+      # Voorkomt dat het scherm flikkert/uitvalt tijdens een OTA-update.
+      CONFIG_SPIRAM_XIP_FROM_PSRAM: "y"
     components:
       - name: espressif/esp_websocket_client
         ref: 1.5.0
@@ -230,9 +233,9 @@ touchscreen:
     i2c_id: bus_a
     display: lcd_display
     update_interval: 30ms
-    # 'expander_interrupt_pin' zit sinds ESPHome 2026.3 in de core gt911 (PR #14358).
-    # Heette voorheen (in de externe PR) gewoon 'interrupt_pin'.
-    expander_interrupt_pin:
+    # De expander-pin mag sinds ESPHome 2026.3 (PR #14358) gewoon onder
+    # 'interrupt_pin' (bevestigd in de bron-repo PedanticAvenger).
+    interrupt_pin:
       waveshare_io_ch32v003: wave_io_hub
       number: 2
     reset_pin:
