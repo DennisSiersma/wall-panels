@@ -1,0 +1,10 @@
+# Wandpaneel 1 - dunne config: alleen substitutions + include van de basis.
+substitutions:
+  device_name: waveshare-panel-1
+  friendly_name: Waveshare Panel 1
+  room_name: Woonkamer
+  rwv_server: "192.168.1.135:8181"
+  dashboard_url: "http://192.168.1.52:8123/dashboard-hadash1"
+
+packages:
+  base: !include common/waveshare-panel.yaml
