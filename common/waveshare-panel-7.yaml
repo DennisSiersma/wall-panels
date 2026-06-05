@@ -123,13 +123,13 @@ switch:
 
 # ==================================================
 # Display (RGB-parallel, 800x480)
+# Geen update_interval/auto_clear-overrides: zelfde gedrag als de
+# werkende 4"-base (scherm wordt bij boot zwart gewist, RWV tekent erin).
 # ==================================================
 display:
   - platform: mipi_rgb
     id: lcd_display
     model: ESP32-S3-TOUCH-LCD-7-800X480
-    update_interval: never
-    auto_clear_enabled: false
     color_order: RGB
     pclk_frequency: 16MHz
     dimensions:
