@@ -134,7 +134,7 @@ time:
 # SPI
 # ==================================================
 spi:
-  - id: spi0
+  - id: spi_bus
     clk_pin: GPIO2
     mosi_pin: GPIO1
 
