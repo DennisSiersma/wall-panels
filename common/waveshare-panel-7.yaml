@@ -194,6 +194,34 @@ remote_webview:
   min_frame_interval: 200
   jpeg_quality: 70
   max_bytes_per_msg: 49152
+  # Markeer het moment waarop het paneel daadwerkelijk een frame ontving
+  # (gebruikt door de koude-start-watchdog hieronder).
+  on_frame_update:
+    - lambda: 'id(last_frame_ms) = millis();'
+
+# ==================================================
+# Koude-start-watchdog
+# Bij een koude start kan de render-server (of het netwerk) nog niet
+# klaar zijn wanneer het paneel boot; je ziet dan een wit scherm tot je
+# handmatig opnieuw aan/uit zet. Deze watchdog herstart het paneel
+# automatisch als het binnen 60s na boot nog geen enkel frame ontving.
+# Zodra er wel een frame is geweest, doet de watchdog niets meer.
+# ==================================================
+globals:
+  - id: last_frame_ms
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+
+interval:
+  - interval: 10s
+    then:
+      - if:
+          condition:
+            lambda: 'return id(last_frame_ms) == 0 && millis() > 60000;'
+          then:
+            - logger.log: "Geen frame 60s na boot - herstart om te herstellen"
+            - button.press: panel_herstart
 
 # ==================================================
 # URL entity
