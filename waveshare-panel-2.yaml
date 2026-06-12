@@ -1,11 +1,11 @@
 # Wandpaneel 2 - dunne config: alleen substitutions + include van de basis.
-# Controleer het dashboard-pad (hadash2) voor dit paneel.
+# Dashboard-pad: 'dashboard-hadash' = het Speelkamer-dashboard in HA.
 substitutions:
   device_name: waveshare-panel-2
   friendly_name: Waveshare Panel 2
   room_name: Speelkamer
   rwv_server: "192.168.1.135:8181"
-  dashboard_url: "http://192.168.1.52:8123/dashboard-hadash2"
+  dashboard_url: "http://192.168.1.52:8123/dashboard-hadash"
 
 packages:
   base: !include common/waveshare-panel.yaml
